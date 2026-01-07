@@ -23,6 +23,9 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    photos: [{
+        type: String // URLs or paths to photos
+    }],
     bonuses: {
         type: Number,
         default: 0

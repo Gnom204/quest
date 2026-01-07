@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { getQuests } from '../../services/api';
 import { SERVER_URL } from '../../services/api';
+import Slider from 'react-slick';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 
 const QuestDetail = () => {
   const { id } = useParams();
@@ -37,6 +40,15 @@ const QuestDetail = () => {
     return <div className="error-message">{error || 'Квест не найден'}</div>;
   }
 
+  const sliderSettings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    adaptiveHeight: true,
+  };
+
   return (
     <div className="quest-detail">
       <div className="quest-header">
@@ -45,33 +57,38 @@ const QuestDetail = () => {
           <span className="player-count">
             {quest.minPlayers}-{quest.maxPlayers} игроков
           </span>
+          {quest.metroBranch && (
+            <span className="metro-branch">
+              Метро: {quest.metroBranch}
+            </span>
+          )}
           <span className="owner">
             Создано: {quest.owner.name} ({quest.owner.email})
           </span>
         </div>
       </div>
 
+      {quest.photos && quest.photos.length > 0 && (
+        <div className="quest-photos-slider">
+          <Slider {...sliderSettings}>
+            {quest.photos.map((photo, index) => (
+              <div key={index}>
+                <img
+                  src={SERVER_URL + photo}
+                  alt={`${quest.title} ${index + 1}`}
+                  className="quest-photo"
+                />
+              </div>
+            ))}
+          </Slider>
+        </div>
+      )}
+
       <div className="quest-content">
         <div className="quest-description">
           <h2>Описание</h2>
           <p>{quest.description}</p>
         </div>
-
-        {quest.photos && quest.photos.length > 0 && (
-          <div className="quest-photos">
-            <h2>Фотографии</h2>
-            <div className="photos-grid">
-              {quest.photos.map((photo, index) => (
-                <img
-                  key={index}
-                  src={SERVER_URL+photo}
-                  alt={`${quest.title} ${index + 1}`}
-                  className="quest-photo"
-                />
-              ))}
-            </div>
-          </div>
-        )}
 
         <div className="quest-info">
           <p><strong>Статус:</strong> {quest.isActive ? 'Активен' : 'Неактивен'}</p>

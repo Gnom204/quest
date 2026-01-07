@@ -179,6 +179,82 @@ export async function searchUsers(email) {
   }
 }
 
+// 9. Блокировка/разблокировка пользователя (только для админов)
+export async function toggleBlockUser(userId) {
+  try {
+    const response = await fetch(`${API_URL}/users/${userId}/toggle-block`, {
+      method: 'PATCH',
+      headers: getAuthHeaders()
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log('Пользователь заблокирован/разблокирован:', result);
+    return result;
+  } catch (error) {
+    console.error('Ошибка при блокировке/разблокировке пользователя:', error);
+    throw error;
+  }
+}
+
+// 10. Загрузка фотографий пользователя (только для админов)
+export async function uploadUserPhotos(userId, files) {
+  try {
+    const formData = new FormData();
+
+    // Добавляем файлы
+    if (files && files.length > 0) {
+      files.forEach((file) => {
+        formData.append('photos', file);
+      });
+    }
+
+    const token = localStorage.getItem('token');
+    const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+
+    const response = await fetch(`${API_URL}/users/${userId}/photos`, {
+      method: 'POST',
+      headers: headers,
+      body: formData
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log('Фотографии загружены:', result);
+    return result;
+  } catch (error) {
+    console.error('Ошибка при загрузке фотографий:', error);
+    throw error;
+  }
+}
+
+// 11. Получение бронирований пользователя
+export async function getUserBookings() {
+  try {
+    const response = await fetch(`${API_URL}/bookings/my-bookings`, {
+      method: 'GET',
+      headers: getAuthHeaders()
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const bookings = await response.json();
+    console.log('Бронирования пользователя:', bookings);
+    return bookings;
+  } catch (error) {
+    console.error('Ошибка при получении бронирований:', error);
+    throw error;
+  }
+}
+
 // 9. Удаление квеста (только для админов)
 export async function deleteQuest(questId) {
   try {

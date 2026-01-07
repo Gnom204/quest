@@ -1,5 +1,5 @@
 const express = require('express');
-const { getAllUsers, searchUsers } = require('../controllers/user');
+const { getAllUsers, searchUsers, toggleBlockUser, uploadUserPhotos, upload } = require('../controllers/user');
 const auth = require('../middleware/auth');
 
 const router = express.Router();
@@ -21,5 +21,7 @@ router.use(async (req, res, next) => {
 
 router.get('/', getAllUsers);
 router.get('/search', searchUsers);
+router.patch('/:userId/toggle-block', toggleBlockUser);
+router.post('/:userId/photos', upload.array('photos', 10), uploadUserPhotos);
 
 module.exports = router;

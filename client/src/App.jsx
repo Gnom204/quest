@@ -5,6 +5,7 @@ import QuestDetail from './components/Quests/QuestDetail';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 import AdminPanel from './components/Admin/AdminPanel';
+import Profile from './components/Profile';
 import './App.css';
 
 function App() {
@@ -26,6 +27,9 @@ function App() {
             {isAuthenticated ? (
               <>
                 <span>Привет, {user?.name}!</span>
+                <Link to="/profile" className="nav-link">
+                  Профиль
+                </Link>
                 {isAdmin && (
                   <Link to="/admin" className="nav-link">
                     Панель администратора
@@ -49,6 +53,10 @@ function App() {
         <Routes>
           <Route path="/" element={<QuestList />} />
           <Route path="/quests/:id" element={<QuestDetail />} />
+          <Route
+            path="/profile"
+            element={isAuthenticated ? <Profile /> : <Navigate to="/login" />}
+          />
           <Route
             path="/login"
             element={isAuthenticated ? <Navigate to="/" /> : <Login />}

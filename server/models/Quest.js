@@ -31,6 +31,10 @@ const questSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
+    metroBranch: {
+        type: String,
+        required: false
+    },
     createdAt: {
         type: Date,
         default: Date.now

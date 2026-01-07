@@ -7,6 +7,7 @@ const QuestCreation = () => {
     description: '',
     minPlayers: 1,
     maxPlayers: 4,
+    metroBranch: '',
   });
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
@@ -74,6 +75,7 @@ const QuestCreation = () => {
         description: '',
         minPlayers: 1,
         maxPlayers: 4,
+        metroBranch: '',
       });
       setSelectedFiles([]);
       setPreviewUrls([]);
@@ -113,6 +115,18 @@ const QuestCreation = () => {
             onChange={handleChange}
             rows="4"
             required
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="metroBranch">Ветка метро:</label>
+          <input
+            type="text"
+            id="metroBranch"
+            name="metroBranch"
+            value={formData.metroBranch}
+            onChange={handleChange}
+            placeholder="Например: Арбатско-Покровская"
           />
         </div>
 

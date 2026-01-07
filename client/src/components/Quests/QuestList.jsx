@@ -36,14 +36,7 @@ const QuestList = () => {
       <div className="quests-grid">
         {quests.map((quest) => (
           <div key={quest._id} className="quest-card">
-            <div className="quest-card-header">
-              <h3>{quest.title}</h3>
-              <span className="player-count">
-                {quest.minPlayers}-{quest.maxPlayers} игроков
-              </span>
-            </div>
-            <div className="quest-card-body">
-              <p>{quest.description.substring(0, 100)}...</p>
+            <div className="quest-image-container">
               {quest.photos && quest.photos.length > 0 && (
                 <img
                   src={SERVER_URL + quest.photos[0]}
@@ -51,6 +44,16 @@ const QuestList = () => {
                   className="quest-image"
                 />
               )}
+              <div className="image-overlay"></div>
+              <div className="quest-info-overlay">
+                <h3>{quest.title}</h3>
+                <span className="player-count">
+                  {quest.minPlayers}-{quest.maxPlayers} игроков
+                </span>
+              </div>
+              <div className="quest-description-overlay">
+                <p>{quest.description}</p>
+              </div>
             </div>
             <div className="quest-card-footer">
               <Link to={`/quests/${quest._id}`} className="btn btn-primary">

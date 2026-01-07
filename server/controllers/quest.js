@@ -30,7 +30,7 @@ const upload = multer({
 
 const createQuest = async (req, res) => {
     try {
-        const { title, description, minPlayers, maxPlayers } = req.body;
+        const { title, description, minPlayers, maxPlayers, metroBranch } = req.body;
         const userId = req.user;
 
         // Check if user is admin
@@ -54,7 +54,8 @@ const createQuest = async (req, res) => {
             minPlayers: parseInt(minPlayers),
             maxPlayers: parseInt(maxPlayers),
             owner: userId,
-            photos
+            photos,
+            metroBranch
         });
 
         await quest.save();
