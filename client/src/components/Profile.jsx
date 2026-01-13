@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { getUserBookings, SERVER_URL } from '../services/api';
 
 const Profile = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -63,7 +63,12 @@ const Profile = () => {
 
   return (
     <div className="profile">
-      <h1>Мой профиль</h1>
+      <div className="profile-header">
+        <h1>Мой профиль</h1>
+        <button onClick={logout} className="btn btn-secondary logout-btn">
+          Выйти
+        </button>
+      </div>
 
       <div className="profile-info">
         <div className="user-details">

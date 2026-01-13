@@ -12,7 +12,7 @@ const requestSchema = new mongoose.Schema({
     },
     date: {
         type: Date,
-        required: true
+        default: Date.now
     },
     responses: [{
         type: mongoose.Schema.Types.ObjectId,

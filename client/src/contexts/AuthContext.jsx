@@ -57,6 +57,8 @@ export const AuthProvider = ({ children }) => {
     logout: handleLogout,
     isAuthenticated: !!user,
     isAdmin: user?.role === 'admin',
+    isOperator: user?.role === 'operator',
+    isQuest: user?.role === 'quest',
     loading,
   };
 

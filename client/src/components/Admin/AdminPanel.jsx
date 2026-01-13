@@ -2,6 +2,7 @@ import { useState } from 'react';
 import UserManagement from './UserManagement';
 import QuestCreation from './QuestCreation';
 import QuestManagement from './QuestManagement';
+import RequestManagement from './RequestManagement';
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState('users');
@@ -10,6 +11,7 @@ const AdminPanel = () => {
     { id: 'users', label: 'Управление пользователями', component: UserManagement },
     { id: 'create-quest', label: 'Создание квестов', component: QuestCreation },
     { id: 'manage-quests', label: 'Управление квестами', component: QuestManagement },
+    { id: 'requests', label: 'Управление заявками', component: RequestManagement },
   ];
 
   const ActiveComponent = tabs.find(tab => tab.id === activeTab)?.component;

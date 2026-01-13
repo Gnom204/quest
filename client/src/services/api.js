@@ -275,3 +275,68 @@ export async function deleteQuest(questId) {
     throw error;
   }
 }
+
+// 12. Создание заявки (только для операторов)
+export async function createRequest(requestData) {
+  try {
+    const response = await fetch(`${API_URL}/requests`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(requestData)
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log('Заявка создана:', result);
+    return result;
+  } catch (error) {
+    console.error('Ошибка при создании заявки:', error);
+    throw error;
+  }
+}
+
+// 13. Получение заявок (только для quest и admin)
+export async function getRequests() {
+  try {
+    const response = await fetch(`${API_URL}/requests`, {
+      method: 'GET',
+      headers: getAuthHeaders()
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const requests = await response.json();
+    console.log('Заявки:', requests);
+    return requests;
+  } catch (error) {
+    console.error('Ошибка при получении заявок:', error);
+    throw error;
+  }
+}
+
+// 14. Обновление статуса заявки (только для quest и admin)
+export async function updateRequestStatus(requestId, status) {
+  try {
+    const response = await fetch(`${API_URL}/requests/${requestId}/status`, {
+      method: 'PATCH',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ status })
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log('Статус заявки обновлен:', result);
+    return result;
+  } catch (error) {
+    console.error('Ошибка при обновлении статуса заявки:', error);
+    throw error;
+  }
+}
