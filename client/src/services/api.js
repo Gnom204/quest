@@ -1,11 +1,11 @@
-export const API_URL = 'http://localhost:5000/api';
-export const SERVER_URL = 'http://localhost:5000'
+export const API_URL = "http://localhost:5000/api";
+export const SERVER_URL = "http://localhost:5000";
 // Вспомогательная функция для получения заголовков с токеном
 const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   return {
-    'Content-Type': 'application/json',
-    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
 };
 
@@ -13,22 +13,31 @@ const getAuthHeaders = () => {
 export async function register(userData) {
   try {
     const response = await fetch(`${API_URL}/auth/register`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(userData)
+      body: JSON.stringify(userData),
     });
 
+    const result = await response.json();
+
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(
+        result.message || `HTTP error! status: ${response.status}`
+      );
     }
 
-    const result = await response.json();
-    console.log('Регистрация успешна:', result);
+    // Сохраняем токен и данные пользователя
+    if (result.token) {
+      localStorage.setItem("token", result.token);
+      localStorage.setItem("user", JSON.stringify(result.user));
+    }
+
+    console.log("Регистрация успешна:", result);
     return result;
   } catch (error) {
-    console.error('Ошибка при регистрации:', error);
+    console.error("Ошибка при регистрации:", error);
     throw error;
   }
 }
@@ -37,43 +46,45 @@ export async function register(userData) {
 export async function login(credentials) {
   try {
     const response = await fetch(`${API_URL}/auth/login`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(credentials)
+      body: JSON.stringify(credentials),
     });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
 
     const result = await response.json();
 
-    // Сохраняем токен и данные пользователя
-    if (result.token) {
-      localStorage.setItem('token', result.token);
-      localStorage.setItem('user', JSON.stringify(result.user));
+    if (!response.ok) {
+      throw new Error(
+        result.message || `HTTP error! status: ${response.status}`
+      );
     }
 
-    console.log('Вход успешен:', result);
+    // Сохраняем токен и данные пользователя
+    if (result.token) {
+      localStorage.setItem("token", result.token);
+      localStorage.setItem("user", JSON.stringify(result.user));
+    }
+
+    console.log("Вход успешен:", result);
     return result;
   } catch (error) {
-    console.error('Ошибка при входе:', error);
+    console.error("Ошибка при входе:", error);
     throw error;
   }
 }
 
 // 3. Выход пользователя
 export function logout() {
-  localStorage.removeItem('token');
-  localStorage.removeItem('user');
-  console.log('Выход выполнен');
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  console.log("Выход выполнен");
 }
 
 // 4. Получение текущего пользователя
 export function getCurrentUser() {
-  const user = localStorage.getItem('user');
+  const user = localStorage.getItem("user");
   return user ? JSON.parse(user) : null;
 }
 
@@ -81,8 +92,8 @@ export function getCurrentUser() {
 export async function getQuests() {
   try {
     const response = await fetch(`${API_URL}/quests`, {
-      method: 'GET',
-      headers: getAuthHeaders()
+      method: "GET",
+      headers: getAuthHeaders(),
     });
 
     if (!response.ok) {
@@ -90,10 +101,10 @@ export async function getQuests() {
     }
 
     const quests = await response.json();
-    console.log('Все квесты:', quests);
+    console.log("Все квесты:", quests);
     return quests;
   } catch (error) {
-    console.error('Ошибка при получении квестов:', error);
+    console.error("Ошибка при получении квестов:", error);
     throw error;
   }
 }
@@ -104,24 +115,24 @@ export async function createQuest(questData, files) {
     const formData = new FormData();
 
     // Добавляем текстовые поля
-    Object.keys(questData).forEach(key => {
+    Object.keys(questData).forEach((key) => {
       formData.append(key, questData[key]);
     });
 
     // Добавляем файлы
     if (files && files.length > 0) {
       files.forEach((file) => {
-        formData.append('photos', file);
+        formData.append("photos", file);
       });
     }
 
-    const token = localStorage.getItem('token');
-    const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+    const token = localStorage.getItem("token");
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
     const response = await fetch(`${API_URL}/quests`, {
-      method: 'POST',
+      method: "POST",
       headers: headers,
-      body: formData
+      body: formData,
     });
 
     if (!response.ok) {
@@ -129,10 +140,10 @@ export async function createQuest(questData, files) {
     }
 
     const result = await response.json();
-    console.log('Квест создан:', result);
+    console.log("Квест создан:", result);
     return result;
   } catch (error) {
-    console.error('Ошибка при создании квеста:', error);
+    console.error("Ошибка при создании квеста:", error);
     throw error;
   }
 }
@@ -141,8 +152,8 @@ export async function createQuest(questData, files) {
 export async function getUsers() {
   try {
     const response = await fetch(`${API_URL}/users`, {
-      method: 'GET',
-      headers: getAuthHeaders()
+      method: "GET",
+      headers: getAuthHeaders(),
     });
 
     if (!response.ok) {
@@ -150,10 +161,10 @@ export async function getUsers() {
     }
 
     const users = await response.json();
-    console.log('Все пользователи:', users);
+    console.log("Все пользователи:", users);
     return users;
   } catch (error) {
-    console.error('Ошибка при получении пользователей:', error);
+    console.error("Ошибка при получении пользователей:", error);
     throw error;
   }
 }
@@ -161,20 +172,23 @@ export async function getUsers() {
 // 8. Поиск пользователей по email (только для админов)
 export async function searchUsers(email) {
   try {
-    const response = await fetch(`${API_URL}/users/search?email=${encodeURIComponent(email)}`, {
-      method: 'GET',
-      headers: getAuthHeaders()
-    });
+    const response = await fetch(
+      `${API_URL}/users/search?email=${encodeURIComponent(email)}`,
+      {
+        method: "GET",
+        headers: getAuthHeaders(),
+      }
+    );
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const users = await response.json();
-    console.log('Результаты поиска:', users);
+    console.log("Результаты поиска:", users);
     return users;
   } catch (error) {
-    console.error('Ошибка при поиске пользователей:', error);
+    console.error("Ошибка при поиске пользователей:", error);
     throw error;
   }
 }
@@ -183,8 +197,8 @@ export async function searchUsers(email) {
 export async function toggleBlockUser(userId) {
   try {
     const response = await fetch(`${API_URL}/users/${userId}/toggle-block`, {
-      method: 'PATCH',
-      headers: getAuthHeaders()
+      method: "PATCH",
+      headers: getAuthHeaders(),
     });
 
     if (!response.ok) {
@@ -192,10 +206,10 @@ export async function toggleBlockUser(userId) {
     }
 
     const result = await response.json();
-    console.log('Пользователь заблокирован/разблокирован:', result);
+    console.log("Пользователь заблокирован/разблокирован:", result);
     return result;
   } catch (error) {
-    console.error('Ошибка при блокировке/разблокировке пользователя:', error);
+    console.error("Ошибка при блокировке/разблокировке пользователя:", error);
     throw error;
   }
 }
@@ -208,17 +222,17 @@ export async function uploadUserPhotos(userId, files) {
     // Добавляем файлы
     if (files && files.length > 0) {
       files.forEach((file) => {
-        formData.append('photos', file);
+        formData.append("photos", file);
       });
     }
 
-    const token = localStorage.getItem('token');
-    const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+    const token = localStorage.getItem("token");
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
     const response = await fetch(`${API_URL}/users/${userId}/photos`, {
-      method: 'POST',
+      method: "POST",
       headers: headers,
-      body: formData
+      body: formData,
     });
 
     if (!response.ok) {
@@ -226,10 +240,10 @@ export async function uploadUserPhotos(userId, files) {
     }
 
     const result = await response.json();
-    console.log('Фотографии загружены:', result);
+    console.log("Фотографии загружены:", result);
     return result;
   } catch (error) {
-    console.error('Ошибка при загрузке фотографий:', error);
+    console.error("Ошибка при загрузке фотографий:", error);
     throw error;
   }
 }
@@ -238,8 +252,8 @@ export async function uploadUserPhotos(userId, files) {
 export async function getUserBookings() {
   try {
     const response = await fetch(`${API_URL}/bookings/my-bookings`, {
-      method: 'GET',
-      headers: getAuthHeaders()
+      method: "GET",
+      headers: getAuthHeaders(),
     });
 
     if (!response.ok) {
@@ -247,10 +261,10 @@ export async function getUserBookings() {
     }
 
     const bookings = await response.json();
-    console.log('Бронирования пользователя:', bookings);
+    console.log("Бронирования пользователя:", bookings);
     return bookings;
   } catch (error) {
-    console.error('Ошибка при получении бронирований:', error);
+    console.error("Ошибка при получении бронирований:", error);
     throw error;
   }
 }
@@ -259,8 +273,8 @@ export async function getUserBookings() {
 export async function deleteQuest(questId) {
   try {
     const response = await fetch(`${API_URL}/quests/${questId}`, {
-      method: 'DELETE',
-      headers: getAuthHeaders()
+      method: "DELETE",
+      headers: getAuthHeaders(),
     });
 
     if (!response.ok) {
@@ -268,10 +282,10 @@ export async function deleteQuest(questId) {
     }
 
     const result = await response.json();
-    console.log('Квест удален:', result);
+    console.log("Квест удален:", result);
     return result;
   } catch (error) {
-    console.error('Ошибка при удалении квеста:', error);
+    console.error("Ошибка при удалении квеста:", error);
     throw error;
   }
 }
@@ -280,9 +294,9 @@ export async function deleteQuest(questId) {
 export async function createRequest(requestData) {
   try {
     const response = await fetch(`${API_URL}/requests`, {
-      method: 'POST',
+      method: "POST",
       headers: getAuthHeaders(),
-      body: JSON.stringify(requestData)
+      body: JSON.stringify(requestData),
     });
 
     if (!response.ok) {
@@ -290,10 +304,10 @@ export async function createRequest(requestData) {
     }
 
     const result = await response.json();
-    console.log('Заявка создана:', result);
+    console.log("Заявка создана:", result);
     return result;
   } catch (error) {
-    console.error('Ошибка при создании заявки:', error);
+    console.error("Ошибка при создании заявки:", error);
     throw error;
   }
 }
@@ -302,8 +316,8 @@ export async function createRequest(requestData) {
 export async function getRequests() {
   try {
     const response = await fetch(`${API_URL}/requests`, {
-      method: 'GET',
-      headers: getAuthHeaders()
+      method: "GET",
+      headers: getAuthHeaders(),
     });
 
     if (!response.ok) {
@@ -311,10 +325,10 @@ export async function getRequests() {
     }
 
     const requests = await response.json();
-    console.log('Заявки:', requests);
+    console.log("Заявки:", requests);
     return requests;
   } catch (error) {
-    console.error('Ошибка при получении заявок:', error);
+    console.error("Ошибка при получении заявок:", error);
     throw error;
   }
 }
@@ -323,9 +337,9 @@ export async function getRequests() {
 export async function updateRequestStatus(requestId, status) {
   try {
     const response = await fetch(`${API_URL}/requests/${requestId}/status`, {
-      method: 'PATCH',
+      method: "PATCH",
       headers: getAuthHeaders(),
-      body: JSON.stringify({ status })
+      body: JSON.stringify({ status }),
     });
 
     if (!response.ok) {
@@ -333,10 +347,10 @@ export async function updateRequestStatus(requestId, status) {
     }
 
     const result = await response.json();
-    console.log('Статус заявки обновлен:', result);
+    console.log("Статус заявки обновлен:", result);
     return result;
   } catch (error) {
-    console.error('Ошибка при обновлении статуса заявки:', error);
+    console.error("Ошибка при обновлении статуса заявки:", error);
     throw error;
   }
 }

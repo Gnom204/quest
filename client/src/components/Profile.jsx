@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { getUserBookings, SERVER_URL } from '../services/api';
+import { useState, useEffect } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import { getUserBookings, SERVER_URL } from "../services/api";
 
 const Profile = () => {
   const { user, logout } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [allQuestPhotos, setAllQuestPhotos] = useState([]);
 
   useEffect(() => {
@@ -20,14 +20,14 @@ const Profile = () => {
 
       // Collect all photos from completed bookings
       const allPhotos = [];
-      response.bookings.forEach(booking => {
+      response.bookings.forEach((booking) => {
         if (booking.photos && booking.photos.length > 0) {
           allPhotos.push(...booking.photos);
         }
       });
       setAllQuestPhotos(allPhotos);
     } catch (error) {
-      setError('Failed to load bookings');
+      setError("Failed to load bookings");
     } finally {
       setLoading(false);
     }
@@ -35,22 +35,22 @@ const Profile = () => {
 
   const getStatusLabel = (status) => {
     const statuses = {
-      pending: 'Ожидает подтверждения',
-      confirmed: 'Подтверждено',
-      completed: 'Завершено',
-      cancelled: 'Отменено'
+      pending: "Ожидает подтверждения",
+      confirmed: "Подтверждено",
+      completed: "Завершено",
+      cancelled: "Отменено",
     };
     return statuses[status] || status;
   };
 
   const getStatusColor = (status) => {
     const colors = {
-      pending: '#ff9800',
-      confirmed: '#2196f3',
-      completed: '#4caf50',
-      cancelled: '#f44336'
+      pending: "#ff9800",
+      confirmed: "#2196f3",
+      completed: "#4caf50",
+      cancelled: "#f44336",
     };
-    return colors[status] || '#666';
+    return colors[status] || "#666";
   };
 
   if (loading) {
@@ -65,9 +65,9 @@ const Profile = () => {
     <div className="profile">
       <div className="profile-header">
         <h1>Мой профиль</h1>
-        <button onClick={logout} className="btn btn-secondary logout-btn">
+        <span onClick={logout} className="logout-link">
           Выйти
-        </button>
+        </span>
       </div>
 
       <div className="profile-info">
@@ -81,18 +81,25 @@ const Profile = () => {
               <strong>Email:</strong> {user?.email}
             </div>
             <div className="info-item">
-              <strong>Роль:</strong> {
-                user?.role === 'client' ? 'Клиент' :
-                user?.role === 'operator' ? 'Оператор' :
-                user?.role === 'quest' ? 'Квест' :
-                user?.role === 'admin' ? 'Администратор' : user?.role
-              }
+              <strong>Роль:</strong>{" "}
+              {user?.role === "client"
+                ? "Клиент"
+                : user?.role === "operator"
+                ? "Оператор"
+                : user?.role === "quest"
+                ? "Квест"
+                : user?.role === "admin"
+                ? "Администратор"
+                : user?.role}
             </div>
             <div className="info-item">
               <strong>Бонусы:</strong> {user?.bonuses || 0}
             </div>
             <div className="info-item">
-              <strong>Дата регистрации:</strong> {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('ru-RU') : 'Неизвестно'}
+              <strong>Дата регистрации:</strong>{" "}
+              {user?.createdAt
+                ? new Date(user.createdAt).toLocaleDateString("ru-RU")
+                : "Неизвестно"}
             </div>
           </div>
         </div>
@@ -113,7 +120,11 @@ const Profile = () => {
             <h3>Фотографии с квестов</h3>
             <div className="photos-grid">
               {allQuestPhotos.map((photo, index) => (
-                <img key={index} src={SERVER_URL + photo} alt={`Фото с квеста ${index + 1}`} />
+                <img
+                  key={index}
+                  src={SERVER_URL + photo}
+                  alt={`Фото с квеста ${index + 1}`}
+                />
               ))}
             </div>
           </div>
@@ -153,13 +164,15 @@ const Profile = () => {
 
                   <div className="booking-details">
                     <div className="detail-item">
-                      <strong>Дата:</strong> {new Date(booking.date).toLocaleDateString('ru-RU')}
+                      <strong>Дата:</strong>{" "}
+                      {new Date(booking.date).toLocaleDateString("ru-RU")}
                     </div>
                     <div className="detail-item">
                       <strong>Время:</strong> {booking.time}
                     </div>
                     <div className="detail-item">
-                      <strong>Игроки:</strong> {booking.quest.minPlayers}-{booking.quest.maxPlayers}
+                      <strong>Игроки:</strong> {booking.quest.minPlayers}-
+                      {booking.quest.maxPlayers}
                     </div>
                     {booking.quest.metroBranch && (
                       <div className="detail-item">
@@ -176,7 +189,11 @@ const Profile = () => {
                       <h4>Фотографии с квеста:</h4>
                       <div className="photos-grid">
                         {booking.photos.map((photo, index) => (
-                          <img key={index} src={SERVER_URL + photo} alt={`Фото с квеста ${index + 1}`} />
+                          <img
+                            key={index}
+                            src={SERVER_URL + photo}
+                            alt={`Фото с квеста ${index + 1}`}
+                          />
                         ))}
                       </div>
                     </div>
