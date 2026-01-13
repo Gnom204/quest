@@ -1,17 +1,26 @@
-import { Routes, Route, Link, Navigate } from 'react-router-dom';
-import { useAuth } from './contexts/AuthContext';
-import QuestList from './components/Quests/QuestList';
-import QuestDetail from './components/Quests/QuestDetail';
-import Login from './components/Auth/Login';
-import Register from './components/Auth/Register';
-import AdminPanel from './components/Admin/AdminPanel';
-import RequestCreation from './components/Operator/RequestCreation';
-import RequestManagement from './components/Admin/RequestManagement';
-import Profile from './components/Profile';
-import './App.css';
+import { Routes, Route, Link, Navigate } from "react-router-dom";
+import { useAuth } from "./contexts/AuthContext";
+import QuestList from "./components/Quests/QuestList";
+import QuestDetail from "./components/Quests/QuestDetail";
+import Login from "./components/Auth/Login";
+import Register from "./components/Auth/Register";
+import AdminPanel from "./components/Admin/AdminPanel";
+import RequestCreation from "./components/Operator/RequestCreation";
+import RequestManagement from "./components/Admin/RequestManagement";
+import RequestDetail from "./components/Admin/RequestDetail";
+import Profile from "./components/Profile";
+import "./App.css";
 
 function App() {
-  const { user, logout, isAuthenticated, isAdmin, isOperator, isQuest, loading } = useAuth();
+  const {
+    user,
+    logout,
+    isAuthenticated,
+    isAdmin,
+    isOperator,
+    isQuest,
+    loading,
+  } = useAuth();
 
   if (loading) {
     return <div className="loading">Загрузка...</div>;
@@ -50,8 +59,12 @@ function App() {
               </>
             ) : (
               <>
-                <Link to="/login" className="nav-link">Войти</Link>
-                <Link to="/register" className="nav-link">Регистрация</Link>
+                <Link to="/login" className="nav-link">
+                  Войти
+                </Link>
+                <Link to="/register" className="nav-link">
+                  Регистрация
+                </Link>
               </>
             )}
           </nav>
@@ -84,7 +97,23 @@ function App() {
           />
           <Route
             path="/requests"
-            element={(isQuest || isAdmin) ? <RequestManagement /> : <Navigate to="/" />}
+            element={
+              isQuest || isAdmin || isOperator ? (
+                <RequestManagement />
+              ) : (
+                <Navigate to="/" />
+              )
+            }
+          />
+          <Route
+            path="/requests/:id"
+            element={
+              isQuest || isAdmin || isOperator ? (
+                <RequestDetail />
+              ) : (
+                <Navigate to="/" />
+              )
+            }
           />
         </Routes>
       </main>

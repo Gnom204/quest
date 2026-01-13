@@ -1,13 +1,16 @@
-import { useState, useEffect } from 'react';
-import { getQuests, createRequest } from '../../services/api';
+import { useState, useEffect } from "react";
+import { getQuests, createRequest } from "../../services/api";
 
 const RequestCreation = () => {
   const [quests, setQuests] = useState([]);
-  const [selectedQuest, setSelectedQuest] = useState('');
-  const [text, setText] = useState('');
+  const [selectedQuest, setSelectedQuest] = useState("");
+  const [text, setText] = useState("");
+  const [questDate, setQuestDate] = useState("");
+  const [questTime, setQuestTime] = useState("");
+  const [metroBranch, setMetroBranch] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   useEffect(() => {
     const fetchQuests = async () => {
@@ -15,7 +18,7 @@ const RequestCreation = () => {
         const response = await getQuests();
         setQuests(response.quests);
       } catch (err) {
-        setError('Ошибка при загрузке квестов');
+        setError("Ошибка при загрузке квестов");
       }
     };
     fetchQuests();
@@ -23,22 +26,37 @@ const RequestCreation = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedQuest || !text.trim()) {
-      setError('Пожалуйста, выберите квест и введите текст заявки');
+    if (
+      !selectedQuest ||
+      !text.trim() ||
+      !questDate ||
+      !questTime ||
+      !metroBranch.trim()
+    ) {
+      setError("Пожалуйста, заполните все поля");
       return;
     }
 
     setLoading(true);
-    setError('');
-    setSuccess('');
+    setError("");
+    setSuccess("");
 
     try {
-      await createRequest({ selectedQuest, text });
-      setSuccess('Заявка успешно создана');
-      setSelectedQuest('');
-      setText('');
+      await createRequest({
+        selectedQuest,
+        text,
+        questDate,
+        questTime,
+        metroBranch,
+      });
+      setSuccess("Заявка успешно создана");
+      setSelectedQuest("");
+      setText("");
+      setQuestDate("");
+      setQuestTime("");
+      setMetroBranch("");
     } catch (err) {
-      setError('Ошибка при создании заявки');
+      setError("Ошибка при создании заявки");
     } finally {
       setLoading(false);
     }
@@ -69,6 +87,40 @@ const RequestCreation = () => {
         </div>
 
         <div className="form-group">
+          <label htmlFor="questDate">Дата проведения квеста:</label>
+          <input
+            type="date"
+            id="questDate"
+            value={questDate}
+            onChange={(e) => setQuestDate(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="questTime">Время проведения квеста:</label>
+          <input
+            type="time"
+            id="questTime"
+            value={questTime}
+            onChange={(e) => setQuestTime(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="metroBranch">Станция метро:</label>
+          <input
+            type="text"
+            id="metroBranch"
+            value={metroBranch}
+            onChange={(e) => setMetroBranch(e.target.value)}
+            placeholder="Введите станцию метро"
+            required
+          />
+        </div>
+
+        <div className="form-group">
           <label htmlFor="text">Текст заявки:</label>
           <textarea
             id="text"
@@ -81,7 +133,7 @@ const RequestCreation = () => {
         </div>
 
         <button type="submit" disabled={loading} className="btn btn-primary">
-          {loading ? 'Создание...' : 'Создать заявку'}
+          {loading ? "Создание..." : "Создать заявку"}
         </button>
       </form>
     </div>
