@@ -10,6 +10,7 @@ import RequestManagement from "./components/Admin/RequestManagement";
 import RequestDetail from "./components/Admin/RequestDetail";
 import Profile from "./components/Profile";
 import accountIcon from "./assets/account.png";
+import logoIcon from "./assets/logo-quest.png";
 import "./App.css";
 
 function App() {
@@ -32,7 +33,7 @@ function App() {
       <header className="app-header">
         <div className="header-content">
           <Link to="/" className="logo">
-            Quest Boom
+            <img src={logoIcon} alt="Quest Boom" className="logo-image" />
           </Link>
 
           <nav className="nav">

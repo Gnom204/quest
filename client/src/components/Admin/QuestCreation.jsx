@@ -1,25 +1,25 @@
-import { useState } from 'react';
-import { createQuest } from '../../services/api';
+import { useState } from "react";
+import { createQuest } from "../../services/api";
 
 const QuestCreation = () => {
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
+    title: "",
+    description: "",
     minPlayers: 1,
     maxPlayers: 4,
-    metroBranch: '',
+    metroBranch: "",
   });
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: name.includes('Players') ? parseInt(value) : value,
+      [name]: name.includes("Players") ? parseInt(value) : value,
     });
   };
 
@@ -27,13 +27,14 @@ const QuestCreation = () => {
     const files = Array.from(e.target.files);
 
     // Validate files
-    const validFiles = files.filter(file => {
-      if (!file.type.startsWith('image/')) {
-        setError('Only image files are allowed');
+    const validFiles = files.filter((file) => {
+      if (!file.type.startsWith("image/")) {
+        setError("Only image files are allowed");
         return false;
       }
-      if (file.size > 5 * 1024 * 1024) { // 5MB
-        setError('File size must be less than 5MB');
+      if (file.size > 5 * 1024 * 1024) {
+        // 5MB
+        setError("File size must be less than 5MB");
         return false;
       }
       return true;
@@ -42,7 +43,7 @@ const QuestCreation = () => {
     setSelectedFiles(validFiles);
 
     // Create preview URLs
-    const urls = validFiles.map(file => URL.createObjectURL(file));
+    const urls = validFiles.map((file) => URL.createObjectURL(file));
     setPreviewUrls(urls);
   };
 
@@ -56,26 +57,28 @@ const QuestCreation = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
+    setError("");
+    setSuccess("");
     setLoading(true);
 
     // Validation
     if (formData.minPlayers > formData.maxPlayers) {
-      setError('Минимальное количество игроков не может быть больше максимального');
+      setError(
+        "Минимальное количество игроков не может быть больше максимального"
+      );
       setLoading(false);
       return;
     }
 
     try {
       await createQuest(formData, selectedFiles);
-      setSuccess('Квест успешно создан!');
+      setSuccess("Квест успешно создан!");
       setFormData({
-        title: '',
-        description: '',
+        title: "",
+        description: "",
         minPlayers: 1,
         maxPlayers: 4,
-        metroBranch: '',
+        metroBranch: "",
       });
       setSelectedFiles([]);
       setPreviewUrls([]);
@@ -176,15 +179,17 @@ const QuestCreation = () => {
               {previewUrls.map((url, index) => (
                 <div key={index} className="photo-item">
                   <img src={url} alt={`Фото ${index + 1}`} />
-                  <button type="button" onClick={() => removePhoto(index)}>Удалить</button>
+                  <button type="button" onClick={() => removePhoto(index)}>
+                    Удалить
+                  </button>
                 </div>
               ))}
             </div>
           )}
         </div>
 
-        <button type="submit" disabled={loading}>
-          {loading ? 'Создание...' : 'Создать квест'}
+        <button type="submit" disabled={loading} className="btn btn-primary">
+          {loading ? "Создание..." : "Создать квест"}
         </button>
       </form>
     </div>

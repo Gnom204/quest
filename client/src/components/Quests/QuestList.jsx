@@ -37,6 +37,24 @@ const QuestList = () => {
 
   return (
     <div className="quest-list">
+      <div className="hero-section">
+        <h1>Добро пожаловать в мир приключений!</h1>
+        <p>
+          Исследуйте захватывающие квесты, полные загадок и эмоций. Выберите
+          свой путь и отправьтесь в незабываемое путешествие с друзьями или
+          семьей.
+        </p>
+        <div className="hero-stats">
+          <div className="stat">
+            <span className="stat-number">{quests.length}</span>
+            <span className="stat-label">Квестов</span>
+          </div>
+          <div className="stat">
+            <span className="stat-number">∞</span>
+            <span className="stat-label">Приключений</span>
+          </div>
+        </div>
+      </div>
       <h1>Доступные квесты</h1>
       <div className="quests-grid">
         {quests.map((quest) => (

@@ -31,17 +31,18 @@ const register = async (req, res) => {
       expiresIn: "1h",
     });
 
-    res
-      .status(201)
-      .json({
-        token,
-        user: {
-          id: user._id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-        },
-      });
+    res.status(201).json({
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        createdAt: user.createdAt,
+        bonuses: user.bonuses,
+        photos: user.photos,
+      },
+    });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
@@ -75,6 +76,9 @@ const login = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        createdAt: user.createdAt,
+        bonuses: user.bonuses,
+        photos: user.photos,
       },
     });
   } catch (error) {

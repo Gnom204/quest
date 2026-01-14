@@ -12,15 +12,40 @@ const RequestManagement = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [selectedQuestFilter, setSelectedQuestFilter] = useState("");
+  const [selectedMetroFilter, setSelectedMetroFilter] = useState("");
+  const [filteredRequests, setFilteredRequests] = useState([]);
+  const [uniqueQuests, setUniqueQuests] = useState([]);
+  const [uniqueMetros, setUniqueMetros] = useState([]);
 
   useEffect(() => {
     fetchRequests();
   }, []);
 
+  useEffect(() => {
+    let filtered = requests;
+    if (selectedQuestFilter) {
+      filtered = filtered.filter(
+        (r) => r.selectedQuest.title === selectedQuestFilter
+      );
+    }
+    if (selectedMetroFilter) {
+      filtered = filtered.filter((r) => r.metroBranch === selectedMetroFilter);
+    }
+    setFilteredRequests(filtered);
+  }, [requests, selectedQuestFilter, selectedMetroFilter]);
+
   const fetchRequests = async () => {
     try {
       const response = await getRequests();
       setRequests(response.requests);
+      const quests = [
+        ...new Set(response.requests.map((r) => r.selectedQuest.title)),
+      ];
+      setUniqueQuests(quests);
+      const metros = [...new Set(response.requests.map((r) => r.metroBranch))];
+      setUniqueMetros(metros);
+      setFilteredRequests(response.requests);
     } catch (err) {
       setError("Ошибка при загрузке заявок");
     } finally {
@@ -48,11 +73,35 @@ const RequestManagement = () => {
   return (
     <div className="request-management">
       <h2>Управление заявками</h2>
-      {requests.length === 0 ? (
+      <div className="filters">
+        <select
+          value={selectedQuestFilter}
+          onChange={(e) => setSelectedQuestFilter(e.target.value)}
+        >
+          <option value="">Все квесты</option>
+          {uniqueQuests.map((quest) => (
+            <option key={quest} value={quest}>
+              {quest}
+            </option>
+          ))}
+        </select>
+        <select
+          value={selectedMetroFilter}
+          onChange={(e) => setSelectedMetroFilter(e.target.value)}
+        >
+          <option value="">Все станции</option>
+          {uniqueMetros.map((metro) => (
+            <option key={metro} value={metro}>
+              {metro}
+            </option>
+          ))}
+        </select>
+      </div>
+      {filteredRequests.length === 0 ? (
         <p>Нет заявок</p>
       ) : (
         <div className="requests-list">
-          {requests.map((request) => (
+          {filteredRequests.map((request) => (
             <div
               key={request._id}
               className="request-card"

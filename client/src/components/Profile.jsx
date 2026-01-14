@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { getUserBookings, SERVER_URL } from "../services/api";
+import downloadIcon from "../assets/download.png";
 
 const Profile = () => {
   const { user, logout } = useAuth();
@@ -109,7 +110,16 @@ const Profile = () => {
             <h3>Мои фотографии</h3>
             <div className="photos-grid">
               {user.photos.map((photo, index) => (
-                <img key={index} src={photo} alt={`Фото ${index + 1}`} />
+                <div key={index} className="photo-item">
+                  <img src={photo} alt={`Фото ${index + 1}`} />
+                  <a
+                    href={photo}
+                    download={`photo-${index + 1}.jpg`}
+                    className="download-btn"
+                  >
+                    <img src={downloadIcon} alt="Скачать" />
+                  </a>
+                </div>
               ))}
             </div>
           </div>
@@ -120,11 +130,19 @@ const Profile = () => {
             <h3>Фотографии с квестов</h3>
             <div className="photos-grid">
               {allQuestPhotos.map((photo, index) => (
-                <img
-                  key={index}
-                  src={SERVER_URL + photo}
-                  alt={`Фото с квеста ${index + 1}`}
-                />
+                <div key={index} className="photo-item">
+                  <img
+                    src={SERVER_URL + photo}
+                    alt={`Фото с квеста ${index + 1}`}
+                  />
+                  <a
+                    href={SERVER_URL + photo}
+                    download={`quest-photo-${index + 1}.jpg`}
+                    className="download-btn"
+                  >
+                    <img src={downloadIcon} alt="Скачать" />
+                  </a>
+                </div>
               ))}
             </div>
           </div>
