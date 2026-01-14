@@ -1,11 +1,16 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { getQuests, SERVER_URL } from '../../services/api';
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { getQuests, SERVER_URL } from "../../services/api";
 
 const QuestList = () => {
   const [quests, setQuests] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
+
+  const truncateDescription = (text, maxLength = 200) => {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + "...";
+  };
 
   useEffect(() => {
     fetchQuests();
@@ -16,7 +21,7 @@ const QuestList = () => {
       const response = await getQuests();
       setQuests(response.quests);
     } catch (error) {
-      setError('Failed to load quests');
+      setError("Failed to load quests");
     } finally {
       setLoading(false);
     }
@@ -39,7 +44,11 @@ const QuestList = () => {
             <div className="quest-image-container">
               {quest.photos && quest.photos.length > 0 && (
                 <img
-                  src={SERVER_URL + quest.photos[0]}
+                  src={
+                    quest.photos[0].startsWith("http")
+                      ? quest.photos[0]
+                      : SERVER_URL + quest.photos[0]
+                  }
                   alt={quest.title}
                   className="quest-image"
                 />
@@ -52,7 +61,7 @@ const QuestList = () => {
                 </span>
               </div>
               <div className="quest-description-overlay">
-                <p>{quest.description}</p>
+                <p>{truncateDescription(quest.description)}</p>
               </div>
             </div>
             <div className="quest-card-footer">

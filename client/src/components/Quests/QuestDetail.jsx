@@ -1,16 +1,16 @@
-import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { getQuests } from '../../services/api';
-import { SERVER_URL } from '../../services/api';
-import Slider from 'react-slick';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { getQuests } from "../../services/api";
+import { SERVER_URL } from "../../services/api";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 const QuestDetail = () => {
   const { id } = useParams();
   const [quest, setQuest] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchQuest();
@@ -19,14 +19,14 @@ const QuestDetail = () => {
   const fetchQuest = async () => {
     try {
       const response = await getQuests();
-      const foundQuest = response.quests.find(q => q._id === id);
+      const foundQuest = response.quests.find((q) => q._id === id);
       if (foundQuest) {
         setQuest(foundQuest);
       } else {
-        setError('Квест не найден');
+        setError("Квест не найден");
       }
     } catch (error) {
-      setError('Failed to load quest');
+      setError("Failed to load quest");
     } finally {
       setLoading(false);
     }
@@ -37,7 +37,7 @@ const QuestDetail = () => {
   }
 
   if (error || !quest) {
-    return <div className="error-message">{error || 'Квест не найден'}</div>;
+    return <div className="error-message">{error || "Квест не найден"}</div>;
   }
 
   const sliderSettings = {
@@ -58,9 +58,7 @@ const QuestDetail = () => {
             {quest.minPlayers}-{quest.maxPlayers} игроков
           </span>
           {quest.metroBranch && (
-            <span className="metro-branch">
-              Метро: {quest.metroBranch}
-            </span>
+            <span className="metro-branch">Метро: {quest.metroBranch}</span>
           )}
           <span className="owner">
             Создано: {quest.owner.name} ({quest.owner.email})
@@ -74,7 +72,7 @@ const QuestDetail = () => {
             {quest.photos.map((photo, index) => (
               <div key={index}>
                 <img
-                  src={SERVER_URL + photo}
+                  src={photo.startsWith("http") ? photo : SERVER_URL + photo}
                   alt={`${quest.title} ${index + 1}`}
                   className="quest-photo"
                 />
@@ -91,8 +89,13 @@ const QuestDetail = () => {
         </div>
 
         <div className="quest-info">
-          <p><strong>Статус:</strong> {quest.isActive ? 'Активен' : 'Неактивен'}</p>
-          <p><strong>Создан:</strong> {new Date(quest.createdAt).toLocaleDateString('ru-RU')}</p>
+          <p>
+            <strong>Статус:</strong> {quest.isActive ? "Активен" : "Неактивен"}
+          </p>
+          <p>
+            <strong>Создан:</strong>{" "}
+            {new Date(quest.createdAt).toLocaleDateString("ru-RU")}
+          </p>
         </div>
       </div>
     </div>

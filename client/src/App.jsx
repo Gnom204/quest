@@ -9,6 +9,7 @@ import RequestCreation from "./components/Operator/RequestCreation";
 import RequestManagement from "./components/Admin/RequestManagement";
 import RequestDetail from "./components/Admin/RequestDetail";
 import Profile from "./components/Profile";
+import accountIcon from "./assets/account.png";
 import "./App.css";
 
 function App() {
@@ -38,8 +39,12 @@ function App() {
             {isAuthenticated ? (
               <>
                 <span>Привет, {user?.name}!</span>
-                <Link to="/profile" className="nav-link">
-                  Профиль
+                <Link to="/profile" className="nav-link profile-link">
+                  <img
+                    src={accountIcon}
+                    alt="Профиль"
+                    className="profile-icon"
+                  />
                 </Link>
                 {isOperator && (
                   <Link to="/create-request" className="nav-link">

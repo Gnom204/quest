@@ -354,3 +354,46 @@ export async function updateRequestStatus(requestId, status) {
     throw error;
   }
 }
+
+// 15. Получение комментариев для заявки
+export async function getComments(requestId) {
+  try {
+    const response = await fetch(`${API_URL}/comments/${requestId}`, {
+      method: "GET",
+      headers: getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log("Комментарии:", result);
+    return result;
+  } catch (error) {
+    console.error("Ошибка при получении комментариев:", error);
+    throw error;
+  }
+}
+
+// 16. Создание комментария
+export async function createComment(requestId, text) {
+  try {
+    const response = await fetch(`${API_URL}/comments`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ requestId, text }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log("Комментарий создан:", result);
+    return result;
+  } catch (error) {
+    console.error("Ошибка при создании комментария:", error);
+    throw error;
+  }
+}
