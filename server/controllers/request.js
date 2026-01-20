@@ -46,25 +46,28 @@ const createRequest = async (req, res) => {
 
     await request.save();
 
-    // Send email to all quest users
-    try {
-      const questUsers = await User.find({ role: "quest" });
-      const subject = "Новая заявка на квест";
-      const emailText = `Новая заявка на квест "${quest.title}" от оператора ${
-        user.name
-      }.\nДата: ${new Date(questDate).toLocaleDateString(
-        "ru-RU"
-      )}\nВремя: ${questTime}\nСтанция метро: ${metroBranch}\nТекст: ${text}`;
-
-      for (const questUser of questUsers) {
-        await sendEmail(questUser.email, subject, emailText);
-      }
-    } catch (emailError) {
-      console.error("Error sending emails:", emailError);
-      // Don't fail the request if email fails
-    }
-
     res.status(201).json({ request });
+
+    // Send email to all quest users asynchronously
+    setImmediate(async () => {
+      try {
+        const questUsers = await User.find({ role: "quest" });
+        const subject = "Новая заявка на квест";
+        const emailText = `Новая заявка на квест "${quest.title}" от оператора ${
+          user.name
+        }.\nДата: ${new Date(questDate).toLocaleDateString(
+          "ru-RU",
+        )}\nВремя: ${questTime}\nСтанция метро: ${metroBranch}\nТекст: ${text}`;
+
+        for (const questUser of questUsers) {
+          sendEmail(questUser.email, subject, emailText).catch((emailError) =>
+            console.error("Error sending email:", emailError),
+          );
+        }
+      } catch (error) {
+        console.error("Error in background email sending:", error);
+      }
+    });
   } catch (error) {
     console.error("Create request error:", error);
     res.status(500).json({ message: "Server error" });

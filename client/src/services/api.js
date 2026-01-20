@@ -1,5 +1,10 @@
-export const API_URL = "http://109.196.102.188/api";
-export const SERVER_URL = "http://109.196.102.188";
+const isLocalhost = window.location.hostname === "localhost";
+export const API_URL = isLocalhost
+  ? "http://localhost:5000/api"
+  : "http://109.196.102.188/api";
+export const SERVER_URL = isLocalhost
+  ? "http://localhost:5000"
+  : "http://109.196.102.188";
 // Вспомогательная функция для получения заголовков с токеном
 const getAuthHeaders = () => {
   const token = localStorage.getItem("token");
