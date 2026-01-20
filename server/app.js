@@ -5,7 +5,12 @@ require("dotenv").config();
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://109.196.102.188", "http://localhost:5173"],
+    credentials: true,
+  }),
+);
 // Middleware
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));

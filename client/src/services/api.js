@@ -1,5 +1,5 @@
-export const API_URL = "http://localhost:5000/api";
-export const SERVER_URL = "http://localhost:5000";
+export const API_URL = "http://109.196.102.188/api";
+export const SERVER_URL = "http://109.196.102.188";
 // Вспомогательная функция для получения заголовков с токеном
 const getAuthHeaders = () => {
   const token = localStorage.getItem("token");
@@ -24,7 +24,7 @@ export async function register(userData) {
 
     if (!response.ok) {
       throw new Error(
-        result.message || `HTTP error! status: ${response.status}`
+        result.message || `HTTP error! status: ${response.status}`,
       );
     }
 
@@ -57,7 +57,7 @@ export async function login(credentials) {
 
     if (!response.ok) {
       throw new Error(
-        result.message || `HTTP error! status: ${response.status}`
+        result.message || `HTTP error! status: ${response.status}`,
       );
     }
 
@@ -177,7 +177,7 @@ export async function searchUsers(email) {
       {
         method: "GET",
         headers: getAuthHeaders(),
-      }
+      },
     );
 
     if (!response.ok) {
