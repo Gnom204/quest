@@ -214,6 +214,28 @@ export async function toggleBlockUser(userId) {
   }
 }
 
+// 10. Изменение роли пользователя (только для админов)
+export async function changeUserRole(userId, role) {
+  try {
+    const response = await fetch(`${API_URL}/users/${userId}/role`, {
+      method: "PATCH",
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ role }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log("Роль пользователя изменена:", result);
+    return result;
+  } catch (error) {
+    console.error("Ошибка при изменении роли пользователя:", error);
+    throw error;
+  }
+}
+
 // 10. Загрузка фотографий пользователя (только для админов)
 export async function uploadUserPhotos(userId, files) {
   try {

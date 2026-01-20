@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
-import { getQuests, deleteQuest } from '../../services/api';
+import { useState, useEffect } from "react";
+import { getQuests, deleteQuest } from "../../services/api";
+import deleteIcon from "../../assets/delete_16025538.png";
 
 const QuestManagement = () => {
   const [quests, setQuests] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [deletingId, setDeletingId] = useState(null);
 
   useEffect(() => {
@@ -15,26 +16,28 @@ const QuestManagement = () => {
     try {
       const response = await getQuests();
       setQuests(response.quests);
-      setError('');
+      setError("");
     } catch (error) {
-      setError('Failed to load quests');
+      setError("Failed to load quests");
     } finally {
       setLoading(false);
     }
   };
 
   const handleDeleteQuest = async (questId, questTitle) => {
-    if (!window.confirm(`Вы уверены, что хотите удалить квест "${questTitle}"?`)) {
+    if (
+      !window.confirm(`Вы уверены, что хотите удалить квест "${questTitle}"?`)
+    ) {
       return;
     }
 
     setDeletingId(questId);
     try {
       await deleteQuest(questId);
-      setQuests(quests.filter(quest => quest._id !== questId));
-      setError('');
+      setQuests(quests.filter((quest) => quest._id !== questId));
+      setError("");
     } catch (error) {
-      setError('Failed to delete quest');
+      setError("Failed to delete quest");
     } finally {
       setDeletingId(null);
     }
@@ -66,17 +69,35 @@ const QuestManagement = () => {
             {quests.map((quest) => (
               <tr key={quest._id}>
                 <td>{quest.title}</td>
-                <td>{quest.description.length > 50 ? `${quest.description.substring(0, 50)}...` : quest.description}</td>
-                <td>{quest.minPlayers}-{quest.maxPlayers}</td>
+                <td>
+                  {quest.description.length > 50
+                    ? `${quest.description.substring(0, 50)}...`
+                    : quest.description}
+                </td>
+                <td>
+                  {quest.minPlayers}-{quest.maxPlayers}
+                </td>
                 <td>{quest.photos ? quest.photos.length : 0}</td>
-                <td>{quest.isActive ? 'Активен' : 'Неактивен'}</td>
+                <td>{quest.isActive ? "Активен" : "Неактивен"}</td>
                 <td>
                   <button
                     onClick={() => handleDeleteQuest(quest._id, quest.title)}
                     disabled={deletingId === quest._id}
                     className="btn btn-danger btn-small"
                   >
-                    {deletingId === quest._id ? 'Удаление...' : 'Удалить'}
+                    {deletingId === quest._id ? (
+                      "Удаление..."
+                    ) : (
+                      <img
+                        src={deleteIcon}
+                        alt="Удалить"
+                        style={{
+                          filter: "brightness(0) invert(1)",
+                          width: "20px",
+                          height: "20px",
+                        }}
+                      />
+                    )}
                   </button>
                 </td>
               </tr>
@@ -85,9 +106,7 @@ const QuestManagement = () => {
         </table>
       </div>
 
-      {quests.length === 0 && (
-        <p className="no-quests">Квесты не найдены.</p>
-      )}
+      {quests.length === 0 && <p className="no-quests">Квесты не найдены.</p>}
     </div>
   );
 };

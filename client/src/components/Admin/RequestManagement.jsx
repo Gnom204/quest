@@ -7,6 +7,7 @@ import {
   deleteRequest,
   SERVER_URL,
 } from "../../services/api";
+import deleteIcon from "../../assets/delete_16025538.png";
 
 const RequestManagement = () => {
   const { user } = useAuth();
@@ -27,7 +28,7 @@ const RequestManagement = () => {
     let filtered = requests;
     if (selectedQuestFilter) {
       filtered = filtered.filter(
-        (r) => r.selectedQuest.title === selectedQuestFilter
+        (r) => r.selectedQuest.title === selectedQuestFilter,
       );
     }
     if (selectedMetroFilter) {
@@ -44,7 +45,7 @@ const RequestManagement = () => {
         ...new Set(
           response.requests
             .filter((r) => r.selectedQuest)
-            .map((r) => r.selectedQuest.title)
+            .map((r) => r.selectedQuest.title),
         ),
       ];
       setUniqueQuests(quests);
@@ -64,8 +65,8 @@ const RequestManagement = () => {
       // Update local state
       setRequests(
         requests.map((req) =>
-          req._id === requestId ? { ...req, status: newStatus } : req
-        )
+          req._id === requestId ? { ...req, status: newStatus } : req,
+        ),
       );
     } catch (err) {
       setError("Ошибка при обновлении статуса");
@@ -174,7 +175,15 @@ const RequestManagement = () => {
                       onClick={() => handleDeleteRequest(request._id)}
                       className="btn btn-danger"
                     >
-                      Удалить
+                      <img
+                        src={deleteIcon}
+                        alt="Удалить"
+                        style={{
+                          filter: "brightness(0) invert(1)",
+                          width: "20px",
+                          height: "20px",
+                        }}
+                      />
                     </button>
                   )}
                 </div>

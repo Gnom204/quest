@@ -1,11 +1,17 @@
-import { useState, useEffect, useCallback } from 'react';
-import { getUsers, searchUsers, toggleBlockUser, uploadUserPhotos } from '../../services/api';
+import { useState, useEffect, useCallback } from "react";
+import {
+  getUsers,
+  searchUsers,
+  toggleBlockUser,
+  uploadUserPhotos,
+  changeUserRole,
+} from "../../services/api";
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
-  const [searchEmail, setSearchEmail] = useState('');
+  const [searchEmail, setSearchEmail] = useState("");
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [searching, setSearching] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -23,15 +29,15 @@ const UserManagement = () => {
       try {
         const response = await searchUsers(email);
         setUsers(response.users);
-        setError('');
+        setError("");
       } catch (error) {
-        setError('Search failed');
+        setError("Search failed");
         setUsers([]);
       } finally {
         setSearching(false);
       }
     }, 300),
-    []
+    [],
   );
 
   useEffect(() => {
@@ -47,9 +53,9 @@ const UserManagement = () => {
     try {
       const response = await getUsers();
       setUsers(response.users);
-      setError('');
+      setError("");
     } catch (error) {
-      setError('Failed to load users');
+      setError("Failed to load users");
       setUsers([]);
     } finally {
       setLoading(false);
@@ -61,7 +67,7 @@ const UserManagement = () => {
   };
 
   const clearSearch = () => {
-    setSearchEmail('');
+    setSearchEmail("");
   };
 
   const openModal = (user) => {
@@ -80,14 +86,16 @@ const UserManagement = () => {
     try {
       await toggleBlockUser(selectedUser._id);
       // Update the user in the list
-      setUsers(users.map(user =>
-        user._id === selectedUser._id
-          ? { ...user, isBlocked: !user.isBlocked }
-          : user
-      ));
+      setUsers(
+        users.map((user) =>
+          user._id === selectedUser._id
+            ? { ...user, isBlocked: !user.isBlocked }
+            : user,
+        ),
+      );
       setSelectedUser({ ...selectedUser, isBlocked: !selectedUser.isBlocked });
     } catch (error) {
-      setError('Failed to toggle user block status');
+      setError("Failed to toggle user block status");
     }
   };
 
@@ -100,20 +108,38 @@ const UserManagement = () => {
       await uploadUserPhotos(selectedUser._id, files);
       // Refresh users list to get updated photos
       await fetchUsers();
-      setError('');
+      setError("");
     } catch (error) {
-      setError('Failed to upload photos');
+      setError("Failed to upload photos");
     } finally {
       setUploading(false);
     }
   };
 
+  const handleChangeRole = async (newRole) => {
+    if (!selectedUser) return;
+
+    try {
+      await changeUserRole(selectedUser._id, newRole);
+      // Update the user in the list
+      setUsers(
+        users.map((user) =>
+          user._id === selectedUser._id ? { ...user, role: newRole } : user,
+        ),
+      );
+      setSelectedUser({ ...selectedUser, role: newRole });
+      setError("");
+    } catch (error) {
+      setError("Failed to change user role");
+    }
+  };
+
   const getRoleLabel = (role) => {
     const roles = {
-      client: 'Клиент',
-      operator: 'Оператор',
-      quest: 'Квест',
-      admin: 'Администратор'
+      client: "Клиент",
+      operator: "Оператор",
+      quest: "Квест",
+      admin: "Администратор",
     };
     return roles[role] || role;
   };
@@ -171,12 +197,16 @@ const UserManagement = () => {
           </thead>
           <tbody>
             {users.map((user) => (
-              <tr key={user._id} onClick={() => openModal(user)} style={{ cursor: 'pointer' }}>
+              <tr
+                key={user._id}
+                onClick={() => openModal(user)}
+                style={{ cursor: "pointer" }}
+              >
                 <td>{user.name}</td>
                 <td>{user.email}</td>
                 <td>{getRoleLabel(user.role)}</td>
-                <td>{user.isBlocked ? 'Да' : 'Нет'}</td>
-                <td>{new Date(user.createdAt).toLocaleDateString('ru-RU')}</td>
+                <td>{user.isBlocked ? "Да" : "Нет"}</td>
+                <td>{new Date(user.createdAt).toLocaleDateString("ru-RU")}</td>
               </tr>
             ))}
           </tbody>
@@ -185,7 +215,7 @@ const UserManagement = () => {
 
       {users.length === 0 && !loading && (
         <p className="no-users">
-          {searchEmail ? 'Пользователи не найдены' : 'Пользователи не найдены.'}
+          {searchEmail ? "Пользователи не найдены" : "Пользователи не найдены."}
         </p>
       )}
 
@@ -194,27 +224,50 @@ const UserManagement = () => {
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h3>Управление пользователем: {selectedUser.name}</h3>
-              <button className="modal-close" onClick={closeModal}>×</button>
+              <button className="modal-close" onClick={closeModal}>
+                ×
+              </button>
             </div>
             <div className="modal-body">
               <div className="user-info">
-                <p><strong>Email:</strong> {selectedUser.email}</p>
-                <p><strong>Роль:</strong> {getRoleLabel(selectedUser.role)}</p>
-                <p><strong>Заблокирован:</strong> {selectedUser.isBlocked ? 'Да' : 'Нет'}</p>
-                <p><strong>Дата регистрации:</strong> {new Date(selectedUser.createdAt).toLocaleDateString('ru-RU')}</p>
+                <p>
+                  <strong>Email:</strong> {selectedUser.email}
+                </p>
+                <div className="role-change">
+                  <label>
+                    <strong>Роль:</strong>
+                  </label>
+                  <select
+                    value={selectedUser.role}
+                    onChange={(e) => handleChangeRole(e.target.value)}
+                  >
+                    <option value="client">Клиент</option>
+                    <option value="operator">Оператор</option>
+                    <option value="quest">Квест</option>
+                    <option value="admin">Администратор</option>
+                  </select>
+                </div>
+                <p>
+                  <strong>Заблокирован:</strong>{" "}
+                  {selectedUser.isBlocked ? "Да" : "Нет"}
+                </p>
+                <p>
+                  <strong>Дата регистрации:</strong>{" "}
+                  {new Date(selectedUser.createdAt).toLocaleDateString("ru-RU")}
+                </p>
               </div>
 
               <div className="modal-actions">
                 <button
-                  className={`btn ${selectedUser.isBlocked ? 'btn-secondary' : 'btn-danger'}`}
+                  className={`btn ${selectedUser.isBlocked ? "btn-secondary" : "btn-danger"}`}
                   onClick={handleToggleBlock}
                 >
-                  {selectedUser.isBlocked ? 'Разблокировать' : 'Заблокировать'}
+                  {selectedUser.isBlocked ? "Разблокировать" : "Заблокировать"}
                 </button>
 
                 <div className="photo-upload">
                   <label htmlFor="photo-upload" className="btn btn-primary">
-                    {uploading ? 'Загрузка...' : 'Прислать фотографии'}
+                    {uploading ? "Загрузка..." : "Прислать фотографии"}
                   </label>
                   <input
                     type="file"
@@ -222,7 +275,7 @@ const UserManagement = () => {
                     multiple
                     accept="image/*"
                     onChange={handlePhotoUpload}
-                    style={{ display: 'none' }}
+                    style={{ display: "none" }}
                     disabled={uploading}
                   />
                 </div>

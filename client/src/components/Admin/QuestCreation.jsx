@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createQuest } from "../../services/api";
+import deleteIcon from "../../assets/delete_16025538.png";
 
 const QuestCreation = () => {
   const [formData, setFormData] = useState({
@@ -64,7 +65,7 @@ const QuestCreation = () => {
     // Validation
     if (formData.minPlayers > formData.maxPlayers) {
       setError(
-        "Минимальное количество игроков не может быть больше максимального"
+        "Минимальное количество игроков не может быть больше максимального",
       );
       setLoading(false);
       return;
@@ -180,7 +181,15 @@ const QuestCreation = () => {
                 <div key={index} className="photo-item">
                   <img src={url} alt={`Фото ${index + 1}`} />
                   <button type="button" onClick={() => removePhoto(index)}>
-                    Удалить
+                    <img
+                      src={deleteIcon}
+                      alt="Удалить"
+                      style={{
+                        filter: "brightness(0) invert(1)",
+                        width: "20px",
+                        height: "20px",
+                      }}
+                    />
                   </button>
                 </div>
               ))}

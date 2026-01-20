@@ -1,14 +1,14 @@
-import { useState } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import { useNavigate, Link } from 'react-router-dom';
+import { useState } from "react";
+import { useAuth } from "../../contexts/AuthContext";
+import { useNavigate, Link } from "react-router-dom";
 
 const Register = () => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    role: 'client', // default role
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    role: "client", // default role
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -21,31 +21,31 @@ const Register = () => {
 
     // Name validation
     if (!formData.name.trim()) {
-      newErrors.name = 'Имя обязательно для заполнения';
+      newErrors.name = "Имя обязательно для заполнения";
     } else if (formData.name.trim().length < 2) {
-      newErrors.name = 'Имя должно содержать минимум 2 символа';
+      newErrors.name = "Имя должно содержать минимум 2 символа";
     }
 
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!formData.email.trim()) {
-      newErrors.email = 'Email обязателен для заполнения';
+      newErrors.email = "Email обязателен для заполнения";
     } else if (!emailRegex.test(formData.email)) {
-      newErrors.email = 'Введите корректный email адрес';
+      newErrors.email = "Введите корректный email адрес";
     }
 
     // Password validation
     if (!formData.password) {
-      newErrors.password = 'Пароль обязателен для заполнения';
+      newErrors.password = "Пароль обязателен для заполнения";
     } else if (formData.password.length < 6) {
-      newErrors.password = 'Пароль должен содержать минимум 6 символов';
+      newErrors.password = "Пароль должен содержать минимум 6 символов";
     }
 
     // Confirm password validation
     if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Подтверждение пароля обязательно';
+      newErrors.confirmPassword = "Подтверждение пароля обязательно";
     } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Пароли не совпадают';
+      newErrors.confirmPassword = "Пароли не совпадают";
     }
 
     setErrors(newErrors);
@@ -63,7 +63,7 @@ const Register = () => {
     if (errors[name]) {
       setErrors({
         ...errors,
-        [name]: '',
+        [name]: "",
       });
     }
   };
@@ -81,11 +81,14 @@ const Register = () => {
       // Remove confirmPassword before sending to API
       const { confirmPassword, ...userData } = formData;
       await register(userData);
-      navigate('/');
+      navigate("/");
     } catch (error) {
       // Handle specific error messages from server
-      if (error.message.includes('User already exists') || error.message.includes('уже существует')) {
-        setErrors({ email: 'Пользователь с таким email уже зарегистрирован' });
+      if (
+        error.message.includes("User already exists") ||
+        error.message.includes("уже существует")
+      ) {
+        setErrors({ email: "Пользователь с таким email уже зарегистрирован" });
       } else {
         setErrors({ general: error.message });
       }
@@ -99,7 +102,9 @@ const Register = () => {
       <div className="auth-card">
         <h2>Регистрация</h2>
 
-        {errors.general && <div className="error-message">{errors.general}</div>}
+        {errors.general && (
+          <div className="error-message">{errors.general}</div>
+        )}
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -110,7 +115,7 @@ const Register = () => {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              className={errors.name ? 'error' : ''}
+              className={errors.name ? "error" : ""}
               placeholder="Введите ваше имя"
             />
             {errors.name && <span className="field-error">{errors.name}</span>}
@@ -124,10 +129,12 @@ const Register = () => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className={errors.email ? 'error' : ''}
+              className={errors.email ? "error" : ""}
               placeholder="example@email.com"
             />
-            {errors.email && <span className="field-error">{errors.email}</span>}
+            {errors.email && (
+              <span className="field-error">{errors.email}</span>
+            )}
           </div>
 
           <div className="form-group">
@@ -138,10 +145,12 @@ const Register = () => {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              className={errors.password ? 'error' : ''}
+              className={errors.password ? "error" : ""}
               placeholder="Минимум 6 символов"
             />
-            {errors.password && <span className="field-error">{errors.password}</span>}
+            {errors.password && (
+              <span className="field-error">{errors.password}</span>
+            )}
           </div>
 
           <div className="form-group">
@@ -152,10 +161,12 @@ const Register = () => {
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
-              className={errors.confirmPassword ? 'error' : ''}
+              className={errors.confirmPassword ? "error" : ""}
               placeholder="Повторите пароль"
             />
-            {errors.confirmPassword && <span className="field-error">{errors.confirmPassword}</span>}
+            {errors.confirmPassword && (
+              <span className="field-error">{errors.confirmPassword}</span>
+            )}
           </div>
 
           <div className="form-group">
@@ -169,12 +180,15 @@ const Register = () => {
               <option value="client">Клиент</option>
               <option value="operator">Оператор</option>
               <option value="quest">Квест</option>
-              <option value="admin">Администратор</option>
             </select>
           </div>
 
-          <button type="submit" disabled={loading} className="btn btn-primary btn-full">
-            {loading ? 'Регистрация...' : 'Зарегистрироваться'}
+          <button
+            type="submit"
+            disabled={loading}
+            className="btn btn-primary btn-full"
+          >
+            {loading ? "Регистрация..." : "Зарегистрироваться"}
           </button>
         </form>
 
