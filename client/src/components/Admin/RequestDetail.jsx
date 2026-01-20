@@ -6,6 +6,7 @@ import {
   updateRequestStatus,
   getComments,
   createComment,
+  assignRequest,
 } from "../../services/api";
 
 const RequestDetail = () => {
@@ -18,6 +19,7 @@ const RequestDetail = () => {
   const [comments, setComments] = useState([]);
   const [loadingComments, setLoadingComments] = useState(false);
   const [newCommentText, setNewCommentText] = useState("");
+  const [assigning, setAssigning] = useState(false);
 
   useEffect(() => {
     fetchRequest();
@@ -79,6 +81,18 @@ const RequestDetail = () => {
     }
   };
 
+  const handleAssignToComment = async (targetUserId) => {
+    setAssigning(true);
+    try {
+      await assignRequest(id, targetUserId);
+      setRequest({ ...request, status: "closed" });
+    } catch (err) {
+      setError("Ошибка при назначении заявки");
+    } finally {
+      setAssigning(false);
+    }
+  };
+
   if (loading) return <div>Загрузка...</div>;
   if (error) return <div className="error-message">{error}</div>;
   if (!request) return <div>Заявка не найдена</div>;
@@ -122,7 +136,7 @@ const RequestDetail = () => {
           {new Date(request.createdAt).toLocaleString()}
         </p>
       </div>
-      {user?.role === "operator" && (
+      {user?.role === "operator" && user?.id === request.from._id && (
         <div className="request-actions">
           {request.status === "open" && (
             <button
@@ -163,6 +177,20 @@ const RequestDetail = () => {
                     </span>
                   </div>
                   <p className="comment-text">{comment.text}</p>
+                  {user?.role === "operator" &&
+                    user?.id === request.from._id &&
+                    request.status === "open" &&
+                    comment.author.role === "quest" && (
+                      <button
+                        onClick={() =>
+                          handleAssignToComment(comment.author._id)
+                        }
+                        disabled={assigning}
+                        className="btn btn-primary btn-small"
+                      >
+                        {assigning ? "назначается..." : "Назначить"}
+                      </button>
+                    )}
                 </div>
               ))
             )}

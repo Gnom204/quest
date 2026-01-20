@@ -355,6 +355,49 @@ export async function updateRequestStatus(requestId, status) {
   }
 }
 
+// 17. Назначение заявки (только для операторов)
+export async function assignRequest(requestId, targetUserId) {
+  try {
+    const response = await fetch(`${API_URL}/requests/${requestId}/assign`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ targetUserId }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log("Заявка назначена:", result);
+    return result;
+  } catch (error) {
+    console.error("Ошибка при назначении заявки:", error);
+    throw error;
+  }
+}
+
+// 18. Удаление заявки (только для админов)
+export async function deleteRequest(requestId) {
+  try {
+    const response = await fetch(`${API_URL}/requests/${requestId}`, {
+      method: "DELETE",
+      headers: getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log("Заявка удалена:", result);
+    return result;
+  } catch (error) {
+    console.error("Ошибка при удалении заявки:", error);
+    throw error;
+  }
+}
+
 // 15. Получение комментариев для заявки
 export async function getComments(requestId) {
   try {

@@ -52,7 +52,7 @@ function App() {
                     Создать заявку
                   </Link>
                 )}
-                {(isQuest || isAdmin) && (
+                {(isQuest || isAdmin || isOperator) && (
                   <Link to="/requests" className="nav-link">
                     Заявки
                   </Link>

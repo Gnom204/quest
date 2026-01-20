@@ -4,6 +4,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import {
   getRequests,
   updateRequestStatus,
+  deleteRequest,
   SERVER_URL,
 } from "../../services/api";
 
@@ -40,7 +41,11 @@ const RequestManagement = () => {
       const response = await getRequests();
       setRequests(response.requests);
       const quests = [
-        ...new Set(response.requests.map((r) => r.selectedQuest.title)),
+        ...new Set(
+          response.requests
+            .filter((r) => r.selectedQuest)
+            .map((r) => r.selectedQuest.title)
+        ),
       ];
       setUniqueQuests(quests);
       const metros = [...new Set(response.requests.map((r) => r.metroBranch))];
@@ -64,6 +69,17 @@ const RequestManagement = () => {
       );
     } catch (err) {
       setError("Ошибка при обновлении статуса");
+    }
+  };
+
+  const handleDeleteRequest = async (requestId) => {
+    if (!window.confirm("Вы уверены, что хотите удалить эту заявку?")) return;
+    try {
+      await deleteRequest(requestId);
+      // Update local state
+      setRequests(requests.filter((req) => req._id !== requestId));
+    } catch (err) {
+      setError("Ошибка при удалении заявки");
     }
   };
 
@@ -107,6 +123,7 @@ const RequestManagement = () => {
               className="request-card"
               style={{
                 backgroundImage:
+                  request.selectedQuest &&
                   request.selectedQuest.photos &&
                   request.selectedQuest.photos.length > 0
                     ? `url(${request.selectedQuest.photos[0]})`
@@ -117,7 +134,11 @@ const RequestManagement = () => {
             >
               <div className="request-overlay">
                 <div className="request-header">
-                  <h3>{request.selectedQuest.title}</h3>
+                  <h3>
+                    {request.selectedQuest
+                      ? request.selectedQuest.title
+                      : "Квест удален"}
+                  </h3>
                   <span className={`status status-${request.status}`}>
                     {request.status === "open" ? "Открыта" : "Закрыта"}
                   </span>
@@ -127,8 +148,9 @@ const RequestManagement = () => {
                     <strong>Станция метро:</strong> {request.metroBranch}
                   </p>
                   <p>
-                    <strong>Оператор:</strong> {request.from.name} (
-                    {request.from.email})
+                    <strong>Оператор:</strong>{" "}
+                    {request.from ? request.from.name : "Неизвестно"} (
+                    {request.from ? request.from.email : "Неизвестно"})
                   </p>
                   <p>
                     {new Date(request.questDate).toLocaleDateString("ru-RU")} в{" "}
@@ -147,29 +169,13 @@ const RequestManagement = () => {
                   >
                     Подробнее
                   </Link>
-                  {user?.role === "operator" && (
-                    <>
-                      {request.status === "open" && (
-                        <button
-                          onClick={() =>
-                            handleStatusChange(request._id, "closed")
-                          }
-                          className="btn btn-secondary"
-                        >
-                          Закрыть заявку
-                        </button>
-                      )}
-                      {request.status === "closed" && (
-                        <button
-                          onClick={() =>
-                            handleStatusChange(request._id, "open")
-                          }
-                          className="btn btn-primary"
-                        >
-                          Открыть заявку
-                        </button>
-                      )}
-                    </>
+                  {user?.role === "admin" && (
+                    <button
+                      onClick={() => handleDeleteRequest(request._id)}
+                      className="btn btn-danger"
+                    >
+                      Удалить
+                    </button>
                   )}
                 </div>
               </div>

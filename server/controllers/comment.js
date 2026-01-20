@@ -70,7 +70,7 @@ const getComments = async (req, res) => {
     }
 
     const comments = await Comment.find({ request: requestId })
-      .populate("author", "name email")
+      .populate("author", "name email role")
       .sort({ createdAt: 1 });
 
     res.json({ comments });

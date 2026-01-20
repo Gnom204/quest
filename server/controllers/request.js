@@ -140,7 +140,9 @@ const updateRequestStatus = async (req, res) => {
 
     let request;
     try {
-      request = await Request.findById(id);
+      request = await Request.findById(id)
+        .populate("from", "name email")
+        .populate("selectedQuest", "title");
     } catch (err) {
       console.error("Error finding request:", err);
       return res.status(404).json({ message: "Request not found" });
@@ -159,4 +161,121 @@ const updateRequestStatus = async (req, res) => {
   }
 };
 
-module.exports = { createRequest, getRequests, updateRequestStatus };
+const assignRequest = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { targetUserId } = req.body;
+    const userId = req.user;
+
+    // Check if user is operator
+    let user;
+    try {
+      user = await User.findById(userId);
+    } catch (err) {
+      console.error("Error finding user:", err);
+      return res.status(401).json({ message: "Invalid user" });
+    }
+    if (!user || user.role !== "operator") {
+      return res.status(403).json({
+        message: "Access denied. Only operators can assign requests.",
+      });
+    }
+
+    let request;
+    try {
+      request = await Request.findById(id)
+        .populate("from", "name email")
+        .populate("selectedQuest", "title");
+    } catch (err) {
+      console.error("Error finding request:", err);
+      return res.status(404).json({ message: "Request not found" });
+    }
+    if (!request) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    // Find target user
+    let targetUser;
+    try {
+      targetUser = await User.findById(targetUserId);
+    } catch (err) {
+      console.error("Error finding target user:", err);
+      return res.status(400).json({ message: "Invalid target user" });
+    }
+    if (!targetUser) {
+      return res.status(404).json({ message: "Target user not found" });
+    }
+
+    // Close the request
+    request.status = "closed";
+    await request.save();
+
+    // Send email to the target user
+    try {
+      const subject = "Вас назначили на проведение квеста";
+      const emailText = `Здравствуйте, ${
+        targetUser.name
+      }!\n\nВас выбрали для проведения квеста "${
+        request.selectedQuest.title
+      }" в ${new Date(request.questDate).toLocaleDateString("ru-RU")} в ${
+        request.questTime
+      }.\n\nУдачи!`;
+      await sendEmail(targetUser.email, subject, emailText);
+    } catch (emailError) {
+      console.error("Error sending assignment email:", emailError);
+      // Don't fail if email fails
+    }
+
+    res.json({ request });
+  } catch (error) {
+    console.error("Error in assignRequest:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+const deleteRequest = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user;
+
+    // Check if user is admin
+    let user;
+    try {
+      user = await User.findById(userId);
+    } catch (err) {
+      console.error("Error finding user:", err);
+      return res.status(401).json({ message: "Invalid user" });
+    }
+    if (!user || user.role !== "admin") {
+      return res.status(403).json({
+        message: "Access denied. Only admins can delete requests.",
+      });
+    }
+
+    let request;
+    try {
+      request = await Request.findById(id);
+    } catch (err) {
+      console.error("Error finding request:", err);
+      return res.status(404).json({ message: "Request not found" });
+    }
+    if (!request) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    await Request.findByIdAndDelete(id);
+
+    res.json({ message: "Request deleted successfully" });
+  } catch (error) {
+    console.error("Error in deleteRequest:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+module.exports = {
+  createRequest,
+  getRequests,
+  updateRequestStatus,
+  assignRequest,
+  deleteRequest,
+};
