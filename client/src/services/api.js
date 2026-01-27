@@ -241,6 +241,27 @@ export async function changeUserRole(userId, role) {
   }
 }
 
+// 11. Удаление пользователя (только для админов)
+export async function deleteUser(userId) {
+  try {
+    const response = await fetch(`${API_URL}/users/${userId}`, {
+      method: "DELETE",
+      headers: getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log("Пользователь удален:", result);
+    return result;
+  } catch (error) {
+    console.error("Ошибка при удалении пользователя:", error);
+    throw error;
+  }
+}
+
 // 10. Загрузка фотографий пользователя (только для админов)
 export async function uploadUserPhotos(userId, files) {
   try {

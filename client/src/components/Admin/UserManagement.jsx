@@ -5,6 +5,7 @@ import {
   toggleBlockUser,
   uploadUserPhotos,
   changeUserRole,
+  deleteUser,
 } from "../../services/api";
 
 const UserManagement = () => {
@@ -131,6 +132,29 @@ const UserManagement = () => {
       setError("");
     } catch (error) {
       setError("Failed to change user role");
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    if (!selectedUser) return;
+
+    if (
+      !window.confirm(
+        `Вы уверены, что хотите удалить пользователя ${selectedUser.name}?`,
+      )
+    ) {
+      return;
+    }
+
+    try {
+      await deleteUser(selectedUser._id);
+      // Remove the user from the list
+      setUsers(users.filter((user) => user._id !== selectedUser._id));
+      setSelectedUser(null);
+      setModalOpen(false);
+      setError("");
+    } catch (error) {
+      setError("Failed to delete user");
     }
   };
 
@@ -263,6 +287,10 @@ const UserManagement = () => {
                   onClick={handleToggleBlock}
                 >
                   {selectedUser.isBlocked ? "Разблокировать" : "Заблокировать"}
+                </button>
+
+                <button className="btn btn-danger" onClick={handleDeleteUser}>
+                  Удалить пользователя
                 </button>
 
                 <div className="photo-upload">

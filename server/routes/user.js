@@ -5,6 +5,7 @@ const {
   toggleBlockUser,
   uploadUserPhotos,
   changeUserRole,
+  deleteUser,
   upload,
 } = require("../controllers/user");
 const auth = require("../middleware/auth");
@@ -30,6 +31,7 @@ router.get("/", getAllUsers);
 router.get("/search", searchUsers);
 router.patch("/:userId/toggle-block", toggleBlockUser);
 router.patch("/:userId/role", changeUserRole);
+router.delete("/:userId", deleteUser);
 router.post("/:userId/photos", upload.array("photos", 10), uploadUserPhotos);
 
 module.exports = router;
