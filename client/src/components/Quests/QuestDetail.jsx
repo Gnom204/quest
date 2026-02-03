@@ -62,7 +62,7 @@ const QuestDetail = () => {
           {quest.metroBranch && (
             <span className="metro-branch">Метро: {quest.metroBranch}</span>
           )}
-          {quest.owner.name && (
+          {quest.owner && quest.owner.name && (
             <span className="owner">
               Создано: {quest.owner.name} ({quest.owner.email})
             </span>
